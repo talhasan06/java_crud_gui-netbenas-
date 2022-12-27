@@ -1,7 +1,9 @@
 import java.sql.*;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 import sun.util.logging.PlatformLogger;
 public class productForm extends javax.swing.JFrame {
 
@@ -12,6 +14,7 @@ public class productForm extends javax.swing.JFrame {
         initComponents();
         Connect();
         LoadProductNo();
+        Fetch();
     }
 
     Connection con;
@@ -42,7 +45,31 @@ public class productForm extends javax.swing.JFrame {
         }
     }
     
-    
+    private void Fetch(){
+        try {
+            int q;
+            pst=con.prepareStatement("SELECT * FROM product_tbl");
+            rs=pst.executeQuery();
+            ResultSetMetaData rss=rs.getMetaData();
+            q=rss.getColumnCount();
+            
+            DefaultTableModel df=(DefaultTableModel)jTable1.getModel();
+            df.setRowCount(0);
+            while(rs.next()){
+                Vector v2=new Vector();
+                for(int a=1;a<=q;a++){
+                    v2.add(rs.getString("id"));
+                    v2.add(rs.getString("pname"));
+                    v2.add(rs.getString("price"));
+                    v2.add(rs.getString("qty"));
+                }
+                df.addRow(v2);
+            }
+            
+        } catch (SQLException ex){
+            Logger.getLogger(productForm.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -144,7 +171,7 @@ public class productForm extends javax.swing.JFrame {
                 {null, null, null, null}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Product ID", "Product Name", "Price", "Quantity"
             }
         ));
         jScrollPane1.setViewportView(jTable1);
